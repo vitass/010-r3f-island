@@ -8,11 +8,24 @@ import "./App.css";
 
 const customUniforms = {
   uTime: { value: 0 },
-  heightMap: {value: null}
+  heightMap: { value: null },
 };
 
 const Terrain = () => {
   const material = useRef();
+
+  const elevationTexture = useLoader(
+    TextureLoader,
+    "textures/iceland_height_map.png"
+  );
+  const normalsTexture = useLoader(
+    TextureLoader,
+    "textures/iceland_normal_map_invert.png"
+  );
+  const colorsTexture = useLoader(
+    TextureLoader,
+    "textures/iceland_height_map_color.png"
+  );
 
   useEffect(() => {
     customUniforms.heightMap.value = elevationTexture;
@@ -37,31 +50,19 @@ const Terrain = () => {
         `
           #include <begin_vertex>
           float h = texture2D(heightMap, vUv).y;
-          float angle = sin(position.y + uTime * .4) * .01;
+          float angle = sin(position.y + uTime * .4) * .008;
           mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
         `
       );
     };
-  }, [material]);
+  }, [material, elevationTexture]);
 
   useFrame(() => {
-    customUniforms.uTime.value += .1
+    customUniforms.uTime.value += 0.1;
     material.current.needsUpdate = true;
   });
 
-  const elevationTexture = useLoader(
-    TextureLoader,
-    "textures/iceland_height_map.png"
-  );
-  const normalsTexture = useLoader(
-    TextureLoader,
-    "textures/iceland_normal_map_invert.png"
-  );
-  const colorsTexture = useLoader(
-    TextureLoader,
-    "textures/iceland_height_map_color.png"
-  );
   return (
     <mesh rotation={[-Math.PI * 0.5, 0, 0]} position={[0, -3, 0]}>
       <planeBufferGeometry attach="geometry" args={[32, 32, 512, 512]} />

@@ -50,8 +50,8 @@ const Terrain = () => {
         `
           #include <begin_vertex>
           float h = texture2D(heightMap, vUv).y;
-          float angle = sin(position.y + uTime * .4) * .008;
-          mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle : 0.);
+          float angle = sin(position.y + uTime * .4) * .009;
+          mat2 rotateMatrix = get2dRotateMatrix(h < .01 ? angle : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
         `
       );

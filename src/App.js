@@ -37,7 +37,7 @@ const Terrain = () => {
         `
           #include <begin_vertex>
           float h = texture2D(heightMap, vUv).y;
-          float angle = sin(position.y + uTime * .3) * .008;
+          float angle = sin(position.y + uTime * .4) * .01;
           mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
         `
@@ -84,7 +84,7 @@ function App() {
     <div className="App">
       <Canvas
         concurrent
-        camera={{ position: [30, 2, -30] }}
+        camera={{ position: [-30, 20.2, -30] }}
         pixelRatio={[1, 1.33]}
       >
         <ambientLight intensity={0.2} />
@@ -95,6 +95,7 @@ function App() {
         <Sky sunPosition={[10, 10, 1]} />
         <OrbitControls
           autoRotate
+          autoRotateSpeed={1}
           minDistance={12}
           maxDistance={20}
           maxPolarAngle={Math.PI * 0.5}

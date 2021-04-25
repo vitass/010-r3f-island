@@ -30,7 +30,7 @@ const Terrain = () => {
     TextureLoader,
     "textures/iceland_ao_map.png"
   );
-  
+
   useEffect(() => {
     customUniforms.heightMap.value = elevationTexture;
 
@@ -200,7 +200,8 @@ const Terrain = () => {
         ref={material}
         attach="material"
         color="white"
-        roughness={0.8}
+        roughness={0.75}
+        metalness={.1}
         displacementMap={elevationTexture}
         displacementScale={1.2}
         normalMap={normalsTexture}
@@ -216,7 +217,7 @@ function App() {
   return (
     <div className="App">
       <Canvas
-        camera={{ position: [-30, 20.2, -30] }}
+        camera={{ position: [50, 35, -30] }}
         colorManagement
         dpr={[1, 2]}
       >
@@ -235,8 +236,8 @@ function App() {
         <OrbitControls
           autoRotate
           autoRotateSpeed={1}
-          minDistance={16}
-          maxDistance={20}
+          minDistance={20}
+          maxDistance={22}
           maxPolarAngle={Math.PI * 0.5}
           enablePan={false}
           enableRotate={true}

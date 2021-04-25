@@ -152,22 +152,22 @@ const Terrain = () => {
           float angle2 = h == 0. ? (uTime + position.x)*freq2 : 0.;
           transformed.z += sin(angle2)*amp2;
 
-          // objectNormal = normalize(vec3(-amp2 * freq2 * cos(angle2),0.0,1.0));
+          objectNormal = normalize(vec3(-amp2 * freq2 * cos(angle2),0.0,1.0));
           // vNormal = normalMatrix * objectNormal;
           
-          // float dx = position.x;
-          // float dy = position.y;
-          // float freq3 = -sqrt(dx*dy) * .35;
-          // float amp3 = .1;
-          // float angle3 = h == 0. ? -uTime * .9 + freq3 * 4.2 : 0.;
-          // transformed.z += cnoise(vec3(0., step(.0, distance(vUv, vec2(.5))) * amp3, 1.));
+          float dx = position.x;
+          float dy = position.y;
+          float freq3 = -sqrt(dx*dy) * .35;
+          float amp3 = .1;
+          float angle3 = h == 0. ? -uTime * .9 + freq3 * 4.2 : 0.;
+          transformed.z += cnoise(vec3(0., step(.0, distance(vUv, vec2(.5))) * amp3, 1.));
           
-          // for(float i = 1.0; i <= 4.; i++) {
-          //   angle3 -= abs(cnoise(vec3(modelPosition.xz * i, uTime * 3.02)) * .06 / i);
-          // }
+          for(float i = 1.0; i <= 4.; i++) {
+            angle3 -= abs(cnoise(vec3(modelPosition.xz * i, uTime * 3.02)) * .06 / i);
+          }
 
-          // objectNormal += normalize(vec3(0.0, -amp3 * 2. * freq3 * sin(angle3),1.0));
-          // vNormal = normalMatrix * objectNormal;
+          objectNormal += normalize(vec3(0.0, -amp3 * 2. * freq3 * sin(angle3),1.0));
+          vNormal = normalMatrix * objectNormal;
         `
       );
 

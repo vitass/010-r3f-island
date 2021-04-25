@@ -20,13 +20,17 @@ const Terrain = () => {
   );
   const normalsTexture = useLoader(
     TextureLoader,
-    "textures/iceland_normal_map_invert.png"
+    "textures/iceland_normal_map_invert_2.png"
   );
   const colorsTexture = useLoader(
     TextureLoader,
-    "textures/iceland_height_map_color.png"
+    "textures/iceland_height_map_color_2.png"
   );
-
+  const aoTexture = useLoader(
+    TextureLoader,
+    "textures/iceland_ao_map.png"
+  );
+  
   useEffect(() => {
     customUniforms.heightMap.value = elevationTexture;
 
@@ -133,7 +137,7 @@ const Terrain = () => {
           #include <begin_vertex>
           float h = texture2D(heightMap, vUv).y;
           vec4 modelPosition = modelMatrix * vec4(position, 1.);
-          float angle1 = sin(position.y + uTime * .45) * .01;
+          float angle1 = abs(sin(position.y + uTime * .45)) * .01;
           
           for(float i = 1.0; i <= 2.; i++) {
             angle1 -= abs(cnoise(vec3(modelPosition.xz * 2.267 * i, uTime * .302)) * .006 / i);
@@ -143,18 +147,26 @@ const Terrain = () => {
           mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle1 : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
 
+          float freq2 = .3;
+          float amp2 = 0.1;
+          float angle2 = h == 0. ? (uTime + position.x)*freq2 : 0.;
+          transformed.z += sin(angle2)*amp2;
+
+          objectNormal = normalize(vec3(-amp2 * freq2 * cos(angle2),0.0,1.0));
+          // vNormal = normalMatrix * objectNormal;
+          
           float dx = position.x;
           float dy = position.y;
-          float freq = -sqrt(dx*dx + dy*dy) * .25;
-          float amp = .2;
-          float angle2 = h < .001 ? -uTime * .2 + freq * 4.2 : 0.;
-          transformed.z += cnoise(vec3(0., step(.5, distance(vUv, vec2(.5))) * amp, 1.));
-
+          float freq3 = -sqrt(dx*dy) * .35;
+          float amp3 = .1;
+          float angle3 = h == 0. ? -uTime * .2 + freq3 * 4.2 : 0.;
+          transformed.z += cnoise(vec3(0., step(.0, distance(vUv, vec2(.5))) * amp3, 1.));
+          
           for(float i = 1.0; i <= 4.; i++) {
-            angle2 -= abs(cnoise(vec3(modelPosition.xz * i, uTime * 3.02)) * .06 / i);
+            angle3 -= abs(cnoise(vec3(modelPosition.xz * i, uTime * 3.02)) * .06 / i);
           }
 
-          objectNormal = normalize(vec3(0.0, -amp * freq * cos(angle2),1.0));
+          objectNormal += normalize(vec3(0.0, -amp3 * 2. * freq3 * sin(angle3),1.0));
           vNormal = normalMatrix * objectNormal;
         `
       );
@@ -188,12 +200,13 @@ const Terrain = () => {
         ref={material}
         attach="material"
         color="white"
-        roughness={0.85}
+        roughness={0.8}
         displacementMap={elevationTexture}
-        displacementScale={1.21}
+        displacementScale={1.2}
         normalMap={normalsTexture}
         map={colorsTexture}
-        transparent={true}
+        aoMap={aoTexture}
+        // transparent={true}
       />
     </mesh>
   );
@@ -208,7 +221,7 @@ function App() {
         dpr={[1, 2]}
       >
         <color attach="background" args={"#dedede"} />
-        <fog attach="fog" args={["#dedede", 35, 45]} />
+        <fog attach="fog" args={["#dedede", 15, 45]} />
         <Sky sunPosition={[12, 12, 3]} />
         <ambientLight intensity={0.4} />
         <directionalLight
@@ -223,7 +236,7 @@ function App() {
           autoRotate
           autoRotateSpeed={1}
           minDistance={16}
-          maxDistance={24}
+          maxDistance={20}
           maxPolarAngle={Math.PI * 0.5}
           enablePan={false}
           enableRotate={true}

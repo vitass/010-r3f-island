@@ -137,17 +137,17 @@ const Terrain = () => {
           #include <begin_vertex>
           float h = texture2D(heightMap, vUv).y;
           vec4 modelPosition = modelMatrix * vec4(position, 1.);
-          float angle1 = abs(sin(position.y + uTime * .45)) * .01;
+          float angle1 = abs(sin(position.y + uTime * 2.)) * .01;
           
           for(float i = 1.0; i <= 2.; i++) {
-            angle1 -= abs(cnoise(vec3(modelPosition.xz * 2.267 * i, uTime * .302)) * .006 / i);
+            angle1 -= abs(cnoise(vec3(modelPosition.xz * 2.267 * i, uTime * .8)) * .006 / i);
           }
 
 
           mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle1 : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
 
-          float freq2 = .3;
+          float freq2 = .9;
           float amp2 = 0.1;
           float angle2 = h == 0. ? (uTime + position.x)*freq2 : 0.;
           transformed.z += sin(angle2)*amp2;
@@ -159,7 +159,7 @@ const Terrain = () => {
           float dy = position.y;
           float freq3 = -sqrt(dx*dy) * .35;
           float amp3 = .1;
-          float angle3 = h == 0. ? -uTime * .2 + freq3 * 4.2 : 0.;
+          float angle3 = h == 0. ? -uTime * .9 + freq3 * 4.2 : 0.;
           transformed.z += cnoise(vec3(0., step(.0, distance(vUv, vec2(.5))) * amp3, 1.));
           
           for(float i = 1.0; i <= 4.; i++) {
@@ -188,8 +188,8 @@ const Terrain = () => {
     };
   }, [material, elevationTexture]);
 
-  useFrame(() => {
-    customUniforms.uTime.value += 0.1;
+  useFrame(({clock}) => {
+    customUniforms.uTime.value = clock.elapsedTime;
     material.current.needsUpdate = true;
   });
 
@@ -217,9 +217,10 @@ function App() {
   return (
     <div className="App">
       <Canvas
-        camera={{ position: [50, 35, -30] }}
+        camera={{ position: [30, 25, -30] }}
         colorManagement
         dpr={[1, 2]}
+        mode="concurrent"
       >
         <color attach="background" args={"#dedede"} />
         <fog attach="fog" args={["#dedede", 15, 45]} />
@@ -235,8 +236,8 @@ function App() {
         </Suspense>
         <OrbitControls
           autoRotate
-          autoRotateSpeed={1}
-          minDistance={20}
+          autoRotateSpeed={.6}
+          minDistance={22}
           maxDistance={22}
           maxPolarAngle={Math.PI * 0.5}
           enablePan={false}

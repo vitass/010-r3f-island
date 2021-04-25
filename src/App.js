@@ -26,10 +26,10 @@ const Terrain = () => {
     TextureLoader,
     "textures/iceland_height_map_color_2.png"
   );
-  // const aoTexture = useLoader(
-  //   TextureLoader,
-  //   "textures/iceland_ao_map.png"
-  // );
+  const aoTexture = useLoader(
+    TextureLoader,
+    "textures/iceland_ao_map.png"
+  );
 
   useEffect(() => {
     customUniforms.heightMap.value = elevationTexture;
@@ -143,34 +143,32 @@ const Terrain = () => {
             angle1 -= abs(cnoise(vec3(modelPosition.xz * 2.267 * i, uTime * .8)) * .006 / i);
           }
 
-
           mat2 rotateMatrix = get2dRotateMatrix(h < .02 ? angle1 : 0.);
           transformed.xz = transformed.xz * rotateMatrix;
 
           float freq2 = .9;
-          float amp2 = 0.1;
-          float angle2 = h == 0. ? (uTime + position.x)*freq2 : 0.;
+          float amp2 = 0.2;
+          float angle2 = h == 0. ? (uTime + position.y)*freq2 : 0.;
           transformed.z += sin(angle2)*amp2;
 
           objectNormal = normalize(vec3(-amp2 * freq2 * cos(angle2),0.0,1.0));
           vNormal = normalMatrix * objectNormal;
         `
       );
-
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <common>",
-        `
-          #include <common>
-        `
-      );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <tonemapping_fragment>",
-        `
-          #include <tonemapping_fragment>
-          // float strength = smoothstep(.49, .5, distance(vUv, vec2(.5)));
-          // gl_FragColor = vec4(gl_FragColor.rgb, 1. - strength);
-        `
-      );
+      // shader.fragmentShader = shader.fragmentShader.replace(
+      //   "#include <common>",
+      //   `
+      //     #include <common>
+      //   `
+      // );
+      // shader.fragmentShader = shader.fragmentShader.replace(
+      //   "#include <tonemapping_fragment>",
+      //   `
+      //     #include <tonemapping_fragment>
+      //     // float strength = smoothstep(.49, .5, distance(vUv, vec2(.5)));
+      //     // gl_FragColor = vec4(gl_FragColor.rgb, 1. - strength);
+      //   `
+      // );
     };
   }, [material, elevationTexture]);
 
@@ -192,7 +190,7 @@ const Terrain = () => {
         displacementScale={1.2}
         normalMap={normalsTexture}
         map={colorsTexture}
-        // aoMap={aoTexture}
+        aoMap={aoTexture}
         // transparent={true}
       />
     </mesh>
@@ -225,7 +223,7 @@ function App() {
           autoRotateSpeed={.6}
           minDistance={22}
           maxDistance={22}
-          maxPolarAngle={Math.PI * 0.5}
+          maxPolarAngle={Math.PI * 0.33}
           enablePan={false}
           enableRotate={true}
         />

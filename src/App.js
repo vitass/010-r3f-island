@@ -24,7 +24,7 @@ const Terrain = () => {
   );
   const colorsTexture = useLoader(
     TextureLoader,
-    "textures/iceland_height_map_color_2.png"
+    "textures/iceland_height_map_color_3.png"
   );
   const aoTexture = useLoader(
     TextureLoader,
